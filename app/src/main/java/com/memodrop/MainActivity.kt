@@ -10,7 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity() {
 
     private lateinit var canvas: HandwritingCanvas
-    private lateinit var tearSound: MediaPlayer
+    private var tearSound: MediaPlayer? = null
     private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,8 +22,8 @@ class MainActivity : AppCompatActivity() {
         // キャンバスを取得
         canvas = findViewById(R.id.handwriting_canvas)
 
-        // 効果音をロード
-        tearSound = MediaPlayer.create(this, R.raw.tear_sound)
+        // 効果音をロード（現在は無効化）
+        tearSound = null
 
         // 削除リスナーを設定
         canvas.onDeleteListener = {
@@ -53,11 +53,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun playTearSound() {
         try {
-            if (tearSound.isPlaying) {
-                tearSound.stop()
-                tearSound.prepare()
+            tearSound?.let { sound ->
+                if (sound.isPlaying) {
+                    sound.stop()
+                    sound.prepare()
+                }
+                sound.start()
             }
-            tearSound.start()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -65,7 +67,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        tearSound.release()
+        tearSound?.release()
         handler.removeCallbacksAndMessages(null)
     }
 }
