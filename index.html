@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <!-- スマホのホーム画面に追加したときにアプリ化（フルスクリーン化）する設定 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#222222">
+  <title>MemoDrop - メモポイ</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #222;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    /* 上部広告エリア（固定） */
+    .ad-banner {
+      width: 100%;
+      max-width: 420px;
+      height: 50px;
+      background-color: #333;
+      color: #888;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      letter-spacing: 1px;
+      flex-shrink: 0;
+      margin-top: env(safe-area-inset-top, 0px);
+    }
+
+    /* ノート全体（台紙） */
+    .pad-container {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      flex: 1;
+      background: #e0e0e0;
+      overflow: hidden;
+      margin-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* 紙本体 */
+    .paper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #faf8f5;
+      background-image: linear-gradient(#e8e4df 1px, transparent 1px);
+      background-size: 100% 32px; /* 方眼・横線風 */
+      display: flex;
+      flex-direction: column;
+      transform-origin: top center;
+      transition: transform 0.05s linear;
+    }
+
+    /* キャンバス（手書きエリア） */
+    canvas {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      touch-action: none;
+      cursor: crosshair;
+    }
+
+    /* 下部の破棄案内 */
+    .tear-zone {
+      height: 45px;
+      background: linear-gradient(to top, rgba(0,0,0,0.05), transparent);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #aaa;
+      font-size: 11px;
+      pointer-events: none;
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    /* 破棄アニメーション */
+    .paper.tearing {
+      transition: transform 0.4s ease-in, opacity 0.4s ease-in;
+      transform: translateY(120%) rotate(8deg) !important;
+      opacity: 0;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 上部広告エリア -->
+  <div class="ad-banner">ADVERTISEMENT</div>
+
+  <!-- メモ帳本体 -->
+  <div class="pad-container">
+    <div class="paper" id="paper">
+      <canvas id="sketchCanvas"></canvas>
+      <div class="tear-zone">▼ 下へスワイプして紙を捨てる ▼</div>
+    </div>
+  </div>
+
+  <script>
+    const paper = document.getElementById('paper');
+    const canvas = document.getElementById('sketchCanvas');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+
+      ctx.strokeStyle = '#2c3e50';
+      ctx.lineWidth = 3;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    setTimeout(resizeCanvas, 50);
+
+    // --- 1. 手書き描画処理 ---
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+
+    function getPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+
+    function startDrawing(e) {
+      if (isTearing) return;
+      isDrawing = true;
+      const pos = getPos(e);
+      lastX = pos.x;
+      lastY = pos.y;
+    }
+
+    function draw(e) {
+      if (!isDrawing) return;
+      const pos = getPos(e);
+      ctx.beginPath();
+      ctx.moveTo(lastX, lastY);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+      lastX = pos.x;
+      lastY = pos.y;
+    }
+
+    function stopDrawing() {
+      isDrawing = false;
+    }
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    window.addEventListener('mouseup', stopDrawing);
+
+    canvas.addEventListener('touchstart', startDrawing);
+    canvas.addEventListener('touchmove', draw);
+    window.addEventListener('touchend', stopDrawing);
+
+    // --- 2. 紙をちぎるジェスチャー ---
+    let startY = 0;
+    let currentY = 0;
+    let isTearing = false;
+    const TEAR_THRESHOLD = 120;
+
+    paper.addEventListener('touchstart', (e) => {
+      const rect = paper.getBoundingClientRect();
+      const touchY = e.touches[0].clientY - rect.top;
+      if (touchY > rect.height - 80) {
+        isTearing = true;
+        startY = e.touches[0].clientY;
+      }
+    });
+
+    paper.addEventListener('touchmove', (e) => {
+      if (!isTearing) return;
+      currentY = e.touches[0].clientY - startY;
+      if (currentY > 0) {
+        paper.style.transform = `translateY(${currentY}px) rotate(${currentY * 0.03}deg)`;
+      }
+    });
+
+    paper.addEventListener('touchend', () => {
+      if (!isTearing) return;
+      if (currentY > TEAR_THRESHOLD) {
+        executeTear();
+      } else {
+        paper.style.transform = 'translateY(0px) rotate(0deg)';
+      }
+      isTearing = false;
+      currentY = 0;
+    });
+
+    // PCマウス用
+    let isMouseDown = false;
+    paper.addEventListener('mousedown', (e) => {
+      const rect = paper.getBoundingClientRect();
+      const mouseY = e.clientY - rect.top;
+      if (mouseY > rect.height - 50) {
+        isMouseDown = true;
+        startY = e.clientY;
+      }
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isMouseDown) return;
+      currentY = e.clientY - startY;
+      if (currentY > 0) {
+        paper.style.transform = `translateY(${currentY}px) rotate(${currentY * 0.03}deg)`;
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (!isMouseDown) return;
+      if (currentY > TEAR_THRESHOLD) {
+        executeTear();
+      } else {
+        paper.style.transform = 'translateY(0px) rotate(0deg)';
+      }
+      isMouseDown = false;
+      currentY = 0;
+    });
+
+    function executeTear() {
+      paper.classList.add('tearing');
+      setTimeout(() => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        paper.classList.remove('tearing');
+        paper.style.transform = 'translateY(0px) rotate(0deg)';
+      }, 400);
+    }
+  </script>
+</body>
+</html>
