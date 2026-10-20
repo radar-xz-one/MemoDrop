@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <!-- アダプティブバナー広告エリア（320x50） -->
+    <FrameLayout
+        android:id="@+id/ad_banner_container"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="top"
+        android:background="#F5F5F5" />
+
+    <!-- 手書きキャンバス -->
+    <com.memodrop.HandwritingCanvas
+        android:id="@+id/handwriting_canvas"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="50dp" />
+
+</FrameLayout>
