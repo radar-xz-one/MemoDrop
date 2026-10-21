@@ -4,6 +4,4 @@
     <string name="intro_hint">Swipe up from the bottom to tear</string>
     <string name="remove_ads">Remove ads (%s)</string>
     <string name="remove_ads_plain">Remove ads</string>
-    <string name="admob_app_id" translatable="false">ca-app-pub-3940256099942544~3347511713</string>
-    <string name="admob_banner_id" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
 </resources>

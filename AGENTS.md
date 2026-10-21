@@ -25,7 +25,7 @@
 - ビルド設定: Kotlin 2.2.21 / compileSdk 36 / targetSdk 35 / minSdk 24
 
 ## 公開前TODO
-- AdMobのIDは現在テスト用。`values/strings.xml` の `admob_app_id` / `admob_banner_id` を本番に差し替える(テストIDのまま公開しない)
+- AdMob: 本番IDはreleaseビルド、テストIDはdebugビルドに `app/build.gradle` の resValue で設定済み(開発中に本番広告を自分でタップしない)
 - Play Consoleで `remove_ads`(100円・管理対象アイテム)を作成
 - 署名鍵作成、AABでリリースビルド
 - アプリアイコン作成(現在は標準アイコン)
@@ -48,4 +48,4 @@
 - リリースAAB: `./gradlew.bat bundleRelease` → `app/build/outputs/bundle/release/app-release.aab`(署名済みでビルド確認済み。versionCodeはアップロードごとに増やす)
 - アイコン作成済み(青緑背景+黄色い鉛筆)。`python tools/make_icon.py`(プロジェクト直下で実行)でアダプティブアイコン・旧端末用PNG・Playストア用 `store/icon-512.png` を再生成できる
 - プライバシーポリシー作成済み: `privacy.html`(日英、連絡先 ecinojo@gmail.com)。公開URL(Pages): https://radar-xz-one.github.io/MemoDrop/privacy.html (プッシュ後に表示を要確認)
-- 残り: AdMob本番ID(本番IDに応じてポリシー内容の見直しも)、Play Consoleの申請作業
+- AdMob本番ID設定済み(versionCode 2)。残り: Play Consoleの申請作業
