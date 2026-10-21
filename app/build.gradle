@@ -3,6 +3,11 @@ plugins {
     id 'org.jetbrains.kotlin.android'
 }
 
+def signingProps = new Properties()
+rootProject.file('.signing.env').with { if (it.exists()) it.withInputStream { s -> signingProps.load(s) } }
+def signingValue = { String key -> System.getenv(key) ?: signingProps.getProperty(key) }
+def keystoreFile = rootProject.file('memodrop-upload.keystore')
+
 android {
     namespace 'com.memodrop'
     compileSdk 36
@@ -15,8 +20,20 @@ android {
         versionName "1.0"
     }
 
+    signingConfigs {
+        if (keystoreFile.exists() && signingValue('MEMODROP_KEYSTORE_PASSWORD')) {
+            release {
+                storeFile keystoreFile
+                storePassword signingValue('MEMODROP_KEYSTORE_PASSWORD')
+                keyAlias signingValue('MEMODROP_KEY_ALIAS')
+                keyPassword signingValue('MEMODROP_KEY_PASSWORD')
+            }
+        }
+    }
+
     buildTypes {
         release {
+            if (signingConfigs.findByName('release')) signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

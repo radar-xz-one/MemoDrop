@@ -40,3 +40,12 @@
 - targetSdk 35 は edge-to-edge 強制。`MainActivity` でシステムバーのinsetsをルートのpaddingに反映している
 - めくり帯の描画オブジェクトは `onSizeChanged` でキャッシュ(onDrawで生成しない)
 - 手書きの点(濁点)は2点目を0.1pxずらして1本の線として扱う
+
+## 署名・公開の進捗(引き継ぎ)
+- 署名鍵: プロジェクト直下に `memodrop-upload.keystore` と `.signing.env`(パスワード入り)を作成済み。`.gitignore` で除外済み(`.gitignore` の変更は未コミット)。中身は会話・ログに出さない
+- GitHub Pages のデプロイは修正済み
+- 署名設定済み(`app/build.gradle`。`.signing.env` または同名の環境変数から読む。鍵が無い環境ではリリースは未署名になるだけでビルドは通る)
+- リリースAAB: `./gradlew.bat bundleRelease` → `app/build/outputs/bundle/release/app-release.aab`(署名済みでビルド確認済み。versionCodeはアップロードごとに増やす)
+- アイコン作成済み(青緑背景+黄色い鉛筆)。`python tools/make_icon.py`(プロジェクト直下で実行)でアダプティブアイコン・旧端末用PNG・Playストア用 `store/icon-512.png` を再生成できる
+- プライバシーポリシー作成済み: `privacy.html`(日英、連絡先 ecinojo@gmail.com)。公開URL(Pages): https://radar-xz-one.github.io/MemoDrop/privacy.html (プッシュ後に表示を要確認)
+- 残り: AdMob本番ID(本番IDに応じてポリシー内容の見直しも)、Play Consoleの申請作業

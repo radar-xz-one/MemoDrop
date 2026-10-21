@@ -10,3 +10,10 @@
 local.properties
 app/build
 gradle
+
+# signing (never commit)
+*.keystore
+*.jks
+.signing.env
+*.aab
+*.apk
