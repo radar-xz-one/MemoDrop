@@ -6,6 +6,7 @@ plugins {
 def signingProps = new Properties()
 rootProject.file('.signing.env').with { if (it.exists()) it.withInputStream { s -> signingProps.load(s) } }
 def signingValue = { String key -> System.getenv(key) ?: signingProps.getProperty(key) }
+def useTestAds = true
 def keystoreFile = rootProject.file('memodrop-upload.keystore')
 
 android {
@@ -16,7 +17,7 @@ android {
         applicationId "com.memo.drop"
         minSdk 24
         targetSdk 36
-        versionCode 6
+        versionCode 7
         versionName "1.0"
     }
 
@@ -37,8 +38,8 @@ android {
             resValue 'string', 'admob_banner_id', 'ca-app-pub-3940256099942544/6300978111'
         }
         release {
-            resValue 'string', 'admob_app_id', 'ca-app-pub-5419101132706357~9886207186'
-            resValue 'string', 'admob_banner_id', 'ca-app-pub-5419101132706357/6669851059'
+            resValue 'string', 'admob_app_id', useTestAds ? 'ca-app-pub-3940256099942544~3347511713' : 'ca-app-pub-5419101132706357~9886207186'
+            resValue 'string', 'admob_banner_id', useTestAds ? 'ca-app-pub-3940256099942544/6300978111' : 'ca-app-pub-5419101132706357/6669851059'
             if (signingConfigs.findByName('release')) signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
