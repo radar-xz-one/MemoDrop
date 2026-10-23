@@ -20,6 +20,10 @@ class HandwritingCanvas @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : View(context, attrs) {
 
+    private companion object {
+        const val ERASER_RADIUS_DP = 14f
+    }
+
     private val density = resources.displayMetrics.density
     private val prefs = context.getSharedPreferences("MemoDrop", Context.MODE_PRIVATE)
 
@@ -52,6 +56,12 @@ class HandwritingCanvas @JvmOverloads constructor(
     private val dragThreshold = resources.displayMetrics.heightPixels * 0.3f
 
     var penColor = Color.BLACK
+    var eraserMode = false
+    private var erasing = false
+    private var erasedAny = false
+    private val ringPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.STROKE; strokeWidth = 2f * density; color = Color.argb(140, 120, 120, 120)
+    }
     var onTearStartListener: (() -> Unit)? = null
 
     private val curlEdge = Path()
@@ -154,6 +164,7 @@ class HandwritingCanvas @JvmOverloads constructor(
         if (peel <= 0f) {
             drawPage(canvas, false)
             if (!cover) drawCornerCurl(canvas)
+            if (erasing) canvas.drawCircle(lastX, lastY, ERASER_RADIUS_DP * density, ringPaint)
             return
         }
 
@@ -203,6 +214,12 @@ class HandwritingCanvas @JvmOverloads constructor(
                     tiltDeg = if (x < width / 2f) -8f else 8f
                 } else if (cover) {
                     ignoring = true
+                } else if (eraserMode) {
+                    erasing = true
+                    lastX = x
+                    lastY = y
+                    eraseAt(x, y, x, y)
+                    invalidate()
                 } else {
                     currentPath = Path().apply { moveTo(x, y) }
                     currentPts.clear()
@@ -215,6 +232,11 @@ class HandwritingCanvas @JvmOverloads constructor(
             MotionEvent.ACTION_MOVE -> {
                 if (isDragging) {
                     peel = (dragStartY - y).coerceAtLeast(0f)
+                    invalidate()
+                } else if (erasing) {
+                    eraseAt(lastX, lastY, x, y)
+                    lastX = x
+                    lastY = y
                     invalidate()
                 } else if (!ignoring && (abs(x - lastX) >= 1f || abs(y - lastY) >= 1f)) {
                     currentPath.quadTo(lastX, lastY, (lastX + x) / 2, (lastY + y) / 2)
@@ -231,6 +253,11 @@ class HandwritingCanvas @JvmOverloads constructor(
                     if (peel >= dragThreshold) performTearAnimation() else animatePeel(peel, 0f, 150, null)
                 } else if (ignoring) {
                     ignoring = false
+                } else if (erasing) {
+                    erasing = false
+                    if (erasedAny) saveToStorage()
+                    erasedAny = false
+                    invalidate()
                 } else {
                     finishStroke()
                 }
@@ -239,6 +266,32 @@ class HandwritingCanvas @JvmOverloads constructor(
             else -> return super.onTouchEvent(event)
         }
         return true
+    }
+
+    private fun eraseAt(x1: Float, y1: Float, x2: Float, y2: Float) {
+        val r = ERASER_RADIUS_DP * density
+        val steps = (Math.hypot((x2 - x1).toDouble(), (y2 - y1).toDouble()) / (r / 2)).toInt() + 1
+        for (i in strokes.indices.reversed()) {
+            val pts = strokes[i]
+            val hit = (0..steps).any { k ->
+                val t = k / steps.toFloat()
+                val px = x1 + (x2 - x1) * t
+                val py = y1 + (y2 - y1) * t
+                (0 until pts.size / 2 - 1).any { j -> distToSegment(px, py, pts[2 * j], pts[2 * j + 1], pts[2 * j + 2], pts[2 * j + 3]) <= r }
+            }
+            if (hit) {
+                strokes.removeAt(i); strokeColors.removeAt(i); paths.removeAt(i)
+                erasedAny = true
+            }
+        }
+    }
+
+    private fun distToSegment(px: Float, py: Float, ax: Float, ay: Float, bx: Float, by: Float): Float {
+        val dx = bx - ax
+        val dy = by - ay
+        val len2 = dx * dx + dy * dy
+        val t = if (len2 == 0f) 0f else (((px - ax) * dx + (py - ay) * dy) / len2).coerceIn(0f, 1f)
+        return Math.hypot((px - (ax + t * dx)).toDouble(), (py - (ay + t * dy)).toDouble()).toFloat()
     }
 
     private fun finishStroke() {

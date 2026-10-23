@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var adContainer: FrameLayout
     private lateinit var removeAds: TextView
     private lateinit var colorBar: LinearLayout
-    private val penColors = intArrayOf(Color.BLACK, 0xFFD32F2F.toInt(), 0xFF1565C0.toInt(), 0xFF2E7D32.toInt(), 0xFF6D4C41.toInt())
+    private val penColors = intArrayOf(Color.BLACK, 0xFFD32F2F.toInt(), 0xFF1565C0.toInt(), 0xFF2E7D32.toInt(), 0xFFF2B600.toInt(), 0xFF6D4C41.toInt())
     private var adView: AdView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +65,7 @@ class MainActivity : AppCompatActivity() {
         adContainer.visibility = vis
         removeAds.visibility = vis
         colorBar.visibility = if (removed) View.VISIBLE else View.GONE
+        canvas.eraserMode = false
         canvas.penColor = if (removed) getSharedPreferences("MemoDrop", MODE_PRIVATE).getInt("pen_color", Color.BLACK) else Color.BLACK
         updateColorSelection()
         if (removed) {
@@ -84,25 +85,40 @@ class MainActivity : AppCompatActivity() {
 
     private fun buildColorBar() {
         val d = resources.displayMetrics.density
+        fun lp(w: Float, h: Float) = LinearLayout.LayoutParams((w * d).toInt(), (h * d).toInt()).apply { marginStart = (10 * d).toInt(); marginEnd = (10 * d).toInt() }
         penColors.forEach { color ->
-            val dot = View(this).apply {
+            colorBar.addView(View(this).apply {
                 tag = color
                 background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(color) }
-                layoutParams = LinearLayout.LayoutParams((24 * d).toInt(), (24 * d).toInt()).apply { marginStart = (12 * d).toInt(); marginEnd = (12 * d).toInt() }
+                layoutParams = lp(24f, 24f)
                 setOnClickListener {
+                    canvas.eraserMode = false
                     canvas.penColor = color
                     getSharedPreferences("MemoDrop", MODE_PRIVATE).edit().putInt("pen_color", color).apply()
                     updateColorSelection()
                 }
-            }
-            colorBar.addView(dot)
+            })
         }
+        colorBar.addView(View(this).apply {
+            tag = "eraser"
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = 5 * d
+                setColor(0xFFF4B6C2.toInt())
+                setStroke((2 * d).toInt(), 0xFF8A8A8A.toInt())
+            }
+            layoutParams = lp(30f, 20f)
+            setOnClickListener {
+                canvas.eraserMode = true
+                updateColorSelection()
+            }
+        })
     }
 
     private fun updateColorSelection() {
         for (i in 0 until colorBar.childCount) {
             val dot = colorBar.getChildAt(i)
-            val selected = dot.tag == canvas.penColor
+            val selected = if (canvas.eraserMode) dot.tag == "eraser" else dot.tag == canvas.penColor
             dot.scaleX = if (selected) 1.3f else 1f
             dot.scaleY = dot.scaleX
             dot.alpha = if (selected) 1f else 0.6f
