@@ -54,3 +54,8 @@
 - アイコン作成済み(青緑背景+黄色い鉛筆)。`python tools/make_icon.py`(プロジェクト直下で実行)でアダプティブアイコン・旧端末用PNG・Playストア用 `store/icon-512.png` を再生成できる
 - プライバシーポリシー作成済み: `privacy.html`(日英、連絡先 ecinojo@gmail.com)。公開URL(Pages): https://radar-xz-one.github.io/MemoDrop/privacy.html (プッシュ後に表示を要確認)
 - AdMob本番ID設定済み(versionCode 8)。残り: Play Consoleの申請作業
+
+## 状況(2026-10-24以降)
+- MemoDropのクローズドテスト開始済み(versionCode 7公開、8は最適化版で追加済み)。業者(ココナラ)に依頼予定。Googleグループの登録がうまくいかず、メーリングリスト(個別Gmail)で進める方針
+- RADARZONEは本申請済みで審査待ち
+- 本審査前にやること: 100円アイテム `remove_ads` の作成確認、`useTestAds = false` で本番広告AAB作成(versionCodeを上げる)、欧州(EEA/UK/CH)を外すかUMP実装かの決定、本申請の質問には事実のとおり短く回答(業者に依頼/フィードバックなし/機能面の修正なし)
