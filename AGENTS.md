@@ -35,7 +35,8 @@
 - ストア掲載情報は英語版も登録(タイトル MemoDrop / メモポイ)
 
 ## 状況
-- クローズドテスト中。終了後に申請開始予定。そのとき公開手順とプライバシーポリシーを作成する
+- 別アプリ(radar zone)のクローズドテスト(13日目、2026-10-23時点)が終わり公開できたら、MemoDropのクローズドテストを開始する(ユーザーから連絡が来る)
+- 最新のAAB: versionCode 5(`app/build/outputs/bundle/release/app-release.aab`)。アップロード後は `remove_ads`(100円)を作成、名前・説明は「広告を消す+ペンの色と消しゴム」に揃える
 
 ## 注意(実装メモ)
 - targetSdk 35 は edge-to-edge 強制。`MainActivity` でシステムバーのinsetsをルートのpaddingに反映している
