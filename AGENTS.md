@@ -27,7 +27,7 @@
 - ビルド設定: Kotlin 2.2.21 / compileSdk 36 / targetSdk 36 / minSdk 24
 
 ## 公開前TODO
-- R8(難読化・縮小)を有効化済み(`minifyEnabled true`)。proguard-rules.proの全体keepは削除。リリースAABは実機で起動・描画・めくり・広告・課金が動くか未確認(2026-10-24時点)。次にスマホをつないだら `assembleRelease` の署名済みAPKで確認する
+- R8(難読化・縮小)を有効化済み(`minifyEnabled true`)。proguard-rules.proの全体keepは削除。署名済みreleaseのAPKで起動・手書き・点・めくり・課金クライアント初期化・広告SDK起動までは実機確認済み(2026-10-24)。広告の表示と課金購入の流れは未確認(スマホのプライベートDNSがAdGuardだと広告が出ない)
 - 【重要】`app/build.gradle` の `useTestAds = true` の間は、releaseビルドもテスト広告になる(クローズドテスト業者の依頼で、テスト期間中は本番広告を使わない)。**本番公開用のAABを作る前に必ず `useTestAds = false` にして、versionCodeを上げて作り直す**
 - AdMob: 本番IDはreleaseビルド、テストIDはdebugビルドに `app/build.gradle` の resValue で設定済み(開発中に本番広告を自分でタップしない)
 - Play Consoleで `remove_ads`(100円・管理対象アイテム)を作成
