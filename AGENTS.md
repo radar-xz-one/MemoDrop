@@ -21,6 +21,7 @@
 - 起動時、メモが空のときだけ表紙(鉛筆の絵)が約1.8秒後に自動でめくれる。メモがあれば演出なし
 - 下部のめくり帯は「わずかに傾けた平らな帯+影」で確定(`drawCornerCurl`)。ロール表現・隅だけの表現は不採用
 - 線の太さ `strokeWidth = 8f`
+- ペンの色: 広告削除の購入者のみ。購入後は広告帯が消え、「広告を消す」帯の位置に色の丸5個(黒・赤・青・緑・茶)が並ぶ。色は線ごとに保存(旧形式の保存データは黒として読む)。商品名・ストア説明は「広告を消す+ペンの色」に揃える
 - 収益化: 無料+上部バナー広告(横長320x50)、100円の買い切りで広告削除(月額ではない)
 - ビルド設定: Kotlin 2.2.21 / compileSdk 36 / targetSdk 35 / minSdk 24
 
@@ -48,4 +49,4 @@
 - リリースAAB: `./gradlew.bat bundleRelease` → `app/build/outputs/bundle/release/app-release.aab`(署名済みでビルド確認済み。versionCodeはアップロードごとに増やす)
 - アイコン作成済み(青緑背景+黄色い鉛筆)。`python tools/make_icon.py`(プロジェクト直下で実行)でアダプティブアイコン・旧端末用PNG・Playストア用 `store/icon-512.png` を再生成できる
 - プライバシーポリシー作成済み: `privacy.html`(日英、連絡先 ecinojo@gmail.com)。公開URL(Pages): https://radar-xz-one.github.io/MemoDrop/privacy.html (プッシュ後に表示を要確認)
-- AdMob本番ID設定済み(versionCode 3)。残り: Play Consoleの申請作業
+- AdMob本番ID設定済み(versionCode 4)。残り: Play Consoleの申請作業

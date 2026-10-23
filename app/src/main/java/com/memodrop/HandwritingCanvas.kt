@@ -10,6 +10,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AccelerateInterpolator
 import org.json.JSONArray
+import org.json.JSONObject
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
@@ -34,6 +35,7 @@ class HandwritingCanvas @JvmOverloads constructor(
     private val fillPaint = Paint().apply { style = Paint.Style.FILL; isAntiAlias = true }
 
     private val strokes = mutableListOf<FloatArray>()
+    private val strokeColors = mutableListOf<Int>()
     private val paths = mutableListOf<Path>()
     private val currentPts = ArrayList<Float>()
     private var currentPath = Path()
@@ -49,6 +51,7 @@ class HandwritingCanvas @JvmOverloads constructor(
     private var tiltDeg = 8f
     private val dragThreshold = resources.displayMetrics.heightPixels * 0.3f
 
+    var penColor = Color.BLACK
     var onTearStartListener: (() -> Unit)? = null
 
     private val curlEdge = Path()
@@ -97,12 +100,20 @@ class HandwritingCanvas @JvmOverloads constructor(
     private fun drawPage(canvas: Canvas, ghost: Boolean) {
         if (ghost) {
             canvas.drawColor(Color.parseColor("#F3F1EE"))
-            if (!cover) for (path in paths) canvas.drawPath(path, ghostPaint)
+            if (!cover) paths.forEachIndexed { i, path ->
+                ghostPaint.color = strokeColors[i]
+                ghostPaint.alpha = 70
+                canvas.drawPath(path, ghostPaint)
+            }
         } else if (cover) {
             drawCover(canvas)
         } else {
             canvas.drawColor(Color.WHITE)
-            for (path in paths) canvas.drawPath(path, paint)
+            paths.forEachIndexed { i, path ->
+                paint.color = strokeColors[i]
+                canvas.drawPath(path, paint)
+            }
+            paint.color = penColor
             canvas.drawPath(currentPath, paint)
         }
     }
@@ -239,6 +250,7 @@ class HandwritingCanvas @JvmOverloads constructor(
         }
         if (currentPts.size >= 4) {
             strokes.add(currentPts.toFloatArray())
+            strokeColors.add(penColor)
             paths.add(currentPath)
             saveToStorage()
         }
@@ -276,6 +288,7 @@ class HandwritingCanvas @JvmOverloads constructor(
     private fun clearCanvas() {
         paths.clear()
         strokes.clear()
+        strokeColors.clear()
         currentPath = Path()
         currentPts.clear()
         invalidate()
@@ -284,7 +297,9 @@ class HandwritingCanvas @JvmOverloads constructor(
 
     private fun saveToStorage() {
         val arr = JSONArray()
-        for (st in strokes) arr.put(JSONArray().also { a -> st.forEach { a.put(it.toDouble()) } })
+        strokes.forEachIndexed { i, st ->
+            arr.put(JSONObject().put("c", strokeColors[i]).put("p", JSONArray().also { a -> st.forEach { a.put(it.toDouble()) } }))
+        }
         prefs.edit().putString("canvas_data", arr.toString()).apply()
     }
 
@@ -293,15 +308,18 @@ class HandwritingCanvas @JvmOverloads constructor(
         try {
             val arr = JSONArray(data)
             for (i in 0 until arr.length()) {
-                val a = arr.getJSONArray(i)
+                val obj = arr.optJSONObject(i)
+                val a = obj?.getJSONArray("p") ?: arr.getJSONArray(i)
                 val pts = FloatArray(a.length()) { a.getDouble(it).toFloat() }
                 if (pts.size >= 4) {
                     strokes.add(pts)
+                    strokeColors.add(obj?.optInt("c", Color.BLACK) ?: Color.BLACK)
                     paths.add(buildPath(pts))
                 }
             }
         } catch (e: Exception) {
             strokes.clear()
+            strokeColors.clear()
             paths.clear()
         }
         invalidate()

@@ -2,9 +2,12 @@ package com.memodrop
 
 import android.media.MediaPlayer
 import android.os.Bundle
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.graphics.Insets
@@ -23,6 +26,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var billing: BillingManager
     private lateinit var adContainer: FrameLayout
     private lateinit var removeAds: TextView
+    private lateinit var colorBar: LinearLayout
+    private val penColors = intArrayOf(Color.BLACK, 0xFFD32F2F.toInt(), 0xFF1565C0.toInt(), 0xFF2E7D32.toInt(), 0xFF6D4C41.toInt())
     private var adView: AdView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,6 +47,8 @@ class MainActivity : AppCompatActivity() {
 
         adContainer = findViewById(R.id.ad_banner_container)
         removeAds = findViewById(R.id.remove_ads)
+        colorBar = findViewById(R.id.color_bar)
+        buildColorBar()
         billing = BillingManager(this, ::applyAdsRemoved) { price ->
             if (price != null) removeAds.text = getString(R.string.remove_ads, price)
         }
@@ -57,6 +64,9 @@ class MainActivity : AppCompatActivity() {
         val vis = if (removed) View.GONE else View.VISIBLE
         adContainer.visibility = vis
         removeAds.visibility = vis
+        colorBar.visibility = if (removed) View.VISIBLE else View.GONE
+        canvas.penColor = if (removed) getSharedPreferences("MemoDrop", MODE_PRIVATE).getInt("pen_color", Color.BLACK) else Color.BLACK
+        updateColorSelection()
         if (removed) {
             adView?.destroy()
             adContainer.removeAllViews()
@@ -69,6 +79,33 @@ class MainActivity : AppCompatActivity() {
                 adContainer.addView(this, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER))
                 loadAd(AdRequest.Builder().build())
             }
+        }
+    }
+
+    private fun buildColorBar() {
+        val d = resources.displayMetrics.density
+        penColors.forEach { color ->
+            val dot = View(this).apply {
+                tag = color
+                background = GradientDrawable().apply { shape = GradientDrawable.OVAL; setColor(color) }
+                layoutParams = LinearLayout.LayoutParams((24 * d).toInt(), (24 * d).toInt()).apply { marginStart = (12 * d).toInt(); marginEnd = (12 * d).toInt() }
+                setOnClickListener {
+                    canvas.penColor = color
+                    getSharedPreferences("MemoDrop", MODE_PRIVATE).edit().putInt("pen_color", color).apply()
+                    updateColorSelection()
+                }
+            }
+            colorBar.addView(dot)
+        }
+    }
+
+    private fun updateColorSelection() {
+        for (i in 0 until colorBar.childCount) {
+            val dot = colorBar.getChildAt(i)
+            val selected = dot.tag == canvas.penColor
+            dot.scaleX = if (selected) 1.3f else 1f
+            dot.scaleY = dot.scaleX
+            dot.alpha = if (selected) 1f else 0.6f
         }
     }
 

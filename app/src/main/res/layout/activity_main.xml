@@ -25,6 +25,15 @@
         android:background="#F5F5F5"
         android:text="@string/remove_ads_plain" />
 
+    <LinearLayout
+        android:id="@+id/color_bar"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:background="#F5F5F5"
+        android:visibility="gone" />
+
     <com.memodrop.HandwritingCanvas
         android:id="@+id/handwriting_canvas"
         android:layout_width="match_parent"
