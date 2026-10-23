@@ -13,7 +13,7 @@ android {
     compileSdk 36
 
     defaultConfig {
-        applicationId "com.memodrop"
+        applicationId "com.memo.drop"
         minSdk 24
         targetSdk 35
         versionCode 5

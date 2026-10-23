@@ -4,10 +4,10 @@
 
 ## ビルド・実機確認
 - USBデバッグ有効のスマホを接続して `./gradlew.bat installDebug`(Windows)
-- 起動: `adb shell monkey -p com.memodrop -c android.intent.category.LAUNCHER 1`
+- 起動: `adb shell monkey -p com.memo.drop -c android.intent.category.LAUNCHER 1`
 - adb: `C:/Users/ecino/AppData/Local/Android/Sdk/platform-tools/adb.exe`
 - Wi-Fi経由のブラウザ確認(index.html)はスマホ側で接続できず断念。USB実機で確認する。
-- 保存データ消去: `adb shell pm clear com.memodrop`
+- 保存データ消去: `adb shell pm clear com.memo.drop`
 
 ## 構成
 - `HandwritingCanvas.kt`: 描画・めくりアニメ・保存復元・表紙演出
@@ -23,6 +23,7 @@
 - 線の太さ `strokeWidth = 8f`
 - ペンの色: 広告削除の購入者のみ。購入後は広告帯が消え、「広告を消す」帯の位置に色の丸6個(黒・赤・青・緑・黄・茶)と消しゴムが並ぶ。消しゴムは触れた線を1本ずつ消す方式(選択状態は保存せず、再起動でペンに戻る)。色は線ごとに保存(旧形式の保存データは黒として読む)。商品名・ストア説明は「広告を消す+ペンの色」に揃える
 - 収益化: 無料+上部バナー広告(横長320x50)、100円の買い切りで広告削除(月額ではない)
+- パッケージ名(applicationId): `com.memo.drop`(Play Consoleに登録済みの名前。コードのnamespaceは `com.memodrop` のまま)
 - ビルド設定: Kotlin 2.2.21 / compileSdk 36 / targetSdk 35 / minSdk 24
 
 ## 公開前TODO
