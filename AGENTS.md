@@ -24,7 +24,7 @@
 - ペンの色: 広告削除の購入者のみ。購入後は広告帯が消え、「広告を消す」帯の位置に色の丸6個(黒・赤・青・緑・黄・茶)と消しゴムが並ぶ。消しゴムは触れた線を1本ずつ消す方式(選択状態は保存せず、再起動でペンに戻る)。色は線ごとに保存(旧形式の保存データは黒として読む)。商品名・ストア説明は「広告を消す+ペンの色」に揃える
 - 収益化: 無料+上部バナー広告(横長320x50)、100円の買い切りで広告削除(月額ではない)
 - パッケージ名(applicationId): `com.memo.drop`(Play Consoleに登録済みの名前。コードのnamespaceは `com.memodrop` のまま)
-- ビルド設定: Kotlin 2.2.21 / compileSdk 36 / targetSdk 35 / minSdk 24
+- ビルド設定: Kotlin 2.2.21 / compileSdk 36 / targetSdk 36 / minSdk 24
 
 ## 公開前TODO
 - AdMob: 本番IDはreleaseビルド、テストIDはdebugビルドに `app/build.gradle` の resValue で設定済み(開発中に本番広告を自分でタップしない)
@@ -40,7 +40,7 @@
 - 最新のAAB: versionCode 5(`app/build/outputs/bundle/release/app-release.aab`)。アップロード後は `remove_ads`(100円)を作成、名前・説明は「広告を消す+ペンの色と消しゴム」に揃える
 
 ## 注意(実装メモ)
-- targetSdk 35 は edge-to-edge 強制。`MainActivity` でシステムバーのinsetsをルートのpaddingに反映している
+- targetSdk 36 は edge-to-edge 強制。`MainActivity` でシステムバーのinsetsをルートのpaddingに反映している
 - めくり帯の描画オブジェクトは `onSizeChanged` でキャッシュ(onDrawで生成しない)
 - 手書きの点(濁点)は2点目を0.1pxずらして1本の線として扱う
 
