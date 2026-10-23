@@ -48,4 +48,4 @@
 - リリースAAB: `./gradlew.bat bundleRelease` → `app/build/outputs/bundle/release/app-release.aab`(署名済みでビルド確認済み。versionCodeはアップロードごとに増やす)
 - アイコン作成済み(青緑背景+黄色い鉛筆)。`python tools/make_icon.py`(プロジェクト直下で実行)でアダプティブアイコン・旧端末用PNG・Playストア用 `store/icon-512.png` を再生成できる
 - プライバシーポリシー作成済み: `privacy.html`(日英、連絡先 ecinojo@gmail.com)。公開URL(Pages): https://radar-xz-one.github.io/MemoDrop/privacy.html (プッシュ後に表示を要確認)
-- AdMob本番ID設定済み(versionCode 2)。残り: Play Consoleの申請作業
+- AdMob本番ID設定済み(versionCode 3)。残り: Play Consoleの申請作業

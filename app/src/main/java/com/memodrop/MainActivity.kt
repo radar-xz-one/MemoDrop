@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         } else if (adView == null) {
             MobileAds.initialize(this)
             adView = AdView(this).apply {
-                setAdSize(AdSize.BANNER)
+                setAdSize(AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this@MainActivity, (resources.displayMetrics.widthPixels / resources.displayMetrics.density).toInt()))
                 adUnitId = getString(R.string.admob_banner_id)
                 adContainer.addView(this, FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER))
                 loadAd(AdRequest.Builder().build())
