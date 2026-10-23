@@ -27,6 +27,7 @@
 - ビルド設定: Kotlin 2.2.21 / compileSdk 36 / targetSdk 36 / minSdk 24
 
 ## 公開前TODO
+- R8(難読化・縮小)を有効化済み(`minifyEnabled true`)。proguard-rules.proの全体keepは削除。リリースAABは実機で起動・描画・めくり・広告・課金が動くか未確認(2026-10-24時点)。次にスマホをつないだら `assembleRelease` の署名済みAPKで確認する
 - 【重要】`app/build.gradle` の `useTestAds = true` の間は、releaseビルドもテスト広告になる(クローズドテスト業者の依頼で、テスト期間中は本番広告を使わない)。**本番公開用のAABを作る前に必ず `useTestAds = false` にして、versionCodeを上げて作り直す**
 - AdMob: 本番IDはreleaseビルド、テストIDはdebugビルドに `app/build.gradle` の resValue で設定済み(開発中に本番広告を自分でタップしない)
 - Play Consoleで `remove_ads`(100円・管理対象アイテム)を作成
@@ -38,7 +39,7 @@
 
 ## 状況
 - 別アプリ(radar zone)のクローズドテスト(13日目、2026-10-23時点)が終わり公開できたら、MemoDropのクローズドテストを開始する(ユーザーから連絡が来る)
-- 最新のAAB: versionCode 7(`app/build/outputs/bundle/release/app-release.aab`)。アップロード後は `remove_ads`(100円)を作成、名前・説明は「広告を消す+ペンの色と消しゴム」に揃える
+- 最新のAAB: versionCode 8(`app/build/outputs/bundle/release/app-release.aab`)。アップロード後は `remove_ads`(100円)を作成、名前・説明は「広告を消す+ペンの色と消しゴム」に揃える
 
 ## 注意(実装メモ)
 - targetSdk 36 は edge-to-edge 強制。`MainActivity` でシステムバーのinsetsをルートのpaddingに反映している
@@ -52,4 +53,4 @@
 - リリースAAB: `./gradlew.bat bundleRelease` → `app/build/outputs/bundle/release/app-release.aab`(署名済みでビルド確認済み。versionCodeはアップロードごとに増やす)
 - アイコン作成済み(青緑背景+黄色い鉛筆)。`python tools/make_icon.py`(プロジェクト直下で実行)でアダプティブアイコン・旧端末用PNG・Playストア用 `store/icon-512.png` を再生成できる
 - プライバシーポリシー作成済み: `privacy.html`(日英、連絡先 ecinojo@gmail.com)。公開URL(Pages): https://radar-xz-one.github.io/MemoDrop/privacy.html (プッシュ後に表示を要確認)
-- AdMob本番ID設定済み(versionCode 7)。残り: Play Consoleの申請作業
+- AdMob本番ID設定済み(versionCode 8)。残り: Play Consoleの申請作業

@@ -1,2 +1,1 @@
-# Add project specific ProGuard rules here.
--keep class com.memodrop.** { *; }
+# R8 rules. Library consumer rules (AdMob, Play Billing) are applied automatically.

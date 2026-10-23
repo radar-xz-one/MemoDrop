@@ -17,7 +17,7 @@ android {
         applicationId "com.memo.drop"
         minSdk 24
         targetSdk 36
-        versionCode 7
+        versionCode 8
         versionName "1.0"
     }
 
@@ -41,7 +41,8 @@ android {
             resValue 'string', 'admob_app_id', useTestAds ? 'ca-app-pub-3940256099942544~3347511713' : 'ca-app-pub-5419101132706357~9886207186'
             resValue 'string', 'admob_banner_id', useTestAds ? 'ca-app-pub-3940256099942544/6300978111' : 'ca-app-pub-5419101132706357/6669851059'
             if (signingConfigs.findByName('release')) signingConfig signingConfigs.release
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
