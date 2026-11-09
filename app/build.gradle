@@ -6,7 +6,7 @@ plugins {
 def signingProps = new Properties()
 rootProject.file('.signing.env').with { if (it.exists()) it.withInputStream { s -> signingProps.load(s) } }
 def signingValue = { String key -> System.getenv(key) ?: signingProps.getProperty(key) }
-def useTestAds = true
+def useTestAds = false
 def keystoreFile = rootProject.file('memodrop-upload.keystore')
 
 android {
@@ -17,7 +17,7 @@ android {
         applicationId "com.memo.drop"
         minSdk 24
         targetSdk 36
-        versionCode 10
+        versionCode 11
         versionName "1.0"
     }
 

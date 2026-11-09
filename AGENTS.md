@@ -39,7 +39,7 @@
 
 ## 状況
 - 別アプリ(radar zone)のクローズドテスト(13日目、2026-10-23時点)が終わり公開できたら、MemoDropのクローズドテストを開始する(ユーザーから連絡が来る)
-- 最新のAAB: versionCode 10(`app/build/outputs/bundle/release/app-release.aab`)。アップロード後は `remove_ads`(100円)を作成、名前・説明は「広告を消す+ペンの色と消しゴム」に揃える
+- 最新のAAB: versionCode 11(本番広告、useTestAds = false)(`app/build/outputs/bundle/release/app-release.aab`)。アップロード後は `remove_ads`(100円)を作成、名前・説明は「広告を消す+ペンの色と消しゴム」に揃える
 
 ## 注意(実装メモ)
 - targetSdk 36 は edge-to-edge 強制。`MainActivity` でシステムバーのinsetsをルートのpaddingに反映している
@@ -68,3 +68,8 @@
 
 ## 欧州の扱い(2026-11-02決定)
 - 本番公開では EEA・イギリス・スイス を配信国から外す(UMP未実装のため)。まず公開を優先し、欧州対応は公開後に検討する(UMP実装+AdMobの同意メッセージ作成)
+
+## 本番公開(2026-11-09)
+- 本番申請は承認済み。本番用AAB: versionCode 11、`useTestAds = false`(本番広告ID入り、ビルド確認済み)
+- 本番リリース作成時に、配信国から EEA・イギリス・スイス を外す
+- 公開後: AdMobのアプリのリンク(ストアとのひも付け)と承認を行う
