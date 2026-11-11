@@ -129,6 +129,11 @@ class MainActivity : AppCompatActivity() {
         tearSound?.let { if (it.isPlaying) it.seekTo(0) else it.start() }
     }
 
+    override fun onResume() {
+        super.onResume()
+        billing.refreshOwned()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         tearSound?.release()

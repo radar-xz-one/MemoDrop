@@ -46,6 +46,10 @@ class BillingManager(private val activity: Activity, private val onAdsRemovedCha
         }
     }
 
+    fun refreshOwned() {
+        if (client.isReady) queryOwned()
+    }
+
     fun purchase() {
         val d = details ?: run { start(); return }
         val params = BillingFlowParams.newBuilder()
