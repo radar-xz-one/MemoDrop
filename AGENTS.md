@@ -73,3 +73,12 @@
 - 本番申請は承認済み。本番用AAB: versionCode 12、`useTestAds = false`(本番広告ID入り、ビルド確認済み)
 - 本番リリース作成時に、配信国から EEA・イギリス・スイス を外す
 - 公開後: AdMobのアプリのリンク(ストアとのひも付け)と承認を行う
+
+## 公開済み(2026-11-11時点)
+- 製品版公開済み。最新: versionCode 13(本番広告、`useTestAds = false`)。起動時と画面復帰時(`onResume`)に購入状況を確認。`allowBackup=false`
+- AdMob: アプリ確認済み・承認済み。ウェブサイト `https://radar-xz-one.github.io`(別リポジトリ `radar-xz-one/radar-xz-one.github.io`、`app-ads.txt` と確認用metaタグ入り)をPlayの掲載情報に登録済み
+- 配信国は146か国(EEA・英国・スイスは除外)。欧州対応(UMP実装+AdMob同意メッセージ)は今後の課題
+- 払い戻し: Play Consoleから手動で払い戻すと、端末のPlayが購入済みを返し続けることがある。テスト以外ではConsoleから払い戻さない。アプリ側の対応はしない方針
+- 課金があるため、開発者の住所がストアに公開される(Google仕様で回避不可。様子見)
+- 広告は自分でタップしない。確認は課金していない別アカウントで行う
+- アップロードごとにversionCodeを上げる(次は14)
